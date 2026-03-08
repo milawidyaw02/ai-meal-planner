@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealAI | Intelligent Meal Planning</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS (as requested for styling options) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Generative AI SDK -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen selection:bg-indigo-100 selection:text-indigo-700">
+    
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 glass border-b border-slate-200 py-4 px-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <i data-lucide="utensils" class="text-white" size="24"></i>
+                </div>
+                <h1 class="text-2xl font-black tracking-tight gradient-text">MealAI.</h1>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 py-12 md:py-20">
+        <!-- Hero Section -->
+        <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
+            <h2 class="text-4xl md:text-6xl font-black text-slate-900 mb-6 leading-tight">
+                Turn your <span class="text-indigo-600">Ingredients</span> into Healthy Masterpieces.
+            </h2>
+            <p class="text-slate-500 text-lg md:text-xl leading-relaxed">
+                Simply snap a photo of your fridge, tell us your budget, and let our AI chef suggest the perfect meal balanced with nutrition.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            <!-- Left Column: Input Form -->
+            <div class="lg:col-span-5 space-y-8">
+                <div class="glass p-8 rounded-[2rem] shadow-2xl border border-white/50 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500/10 blur-3xl rounded-full"></div>
+                    
+                    <div class="space-y-6 relative">
+                        <!-- File Upload -->
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-3 ml-1">1. Snap your ingredients</label>
+                            <div id="dropZone" class="upload-area rounded-3xl p-10 text-center cursor-pointer relative group">
+                                <input type="file" id="fileUpload" class="hidden" accept="image/*">
+                                <div id="uploadPlaceholder" class="transition-all duration-300">
+                                    <div class="w-16 h-16 bg-white shadow-sm rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                        <i data-lucide="camera" class="text-indigo-500" size="32"></i>
+                                    </div>
+                                    <p class="text-slate-600 font-medium">Click or drag photo</p>
+                                    <p class="text-slate-400 text-xs mt-1">Supports JPG, PNG (Max 5MB)</p>
+                                </div>
+                                <div id="imagePreviewContainer" class="hidden relative group">
+                                    <img id="imagePreview" class="rounded-2xl max-h-64 mx-auto shadow-xl border-4 border-white object-cover">
+                                    <button onclick="resetUpload(event)" class="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors">
+                                        <i data-lucide="x" size="16"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configs -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="budget" class="block text-sm font-bold text-slate-700 mb-2 ml-1">2. Budget (Rp)</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                        <span class="text-xs font-bold">Rp</span>
+                                    </div>
+                                    <input type="number" id="budget" name="budget" placeholder="50.000" 
+                                        class="w-full pl-10 pr-4 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 font-semibold">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="timeProcess" class="block text-sm font-bold text-slate-700 mb-2 ml-1">3. Time (Min)</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                        <i data-lucide="clock" size="18"></i>
+                                    </div>
+                                    <input type="number" id="timeProcess" name="time" placeholder="30" 
+                                        class="w-full pl-10 pr-4 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 font-semibold">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="addMealBtn" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-xl shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-3 group">
+                            <i data-lucide="magic-wand" class="group-hover:rotate-12 transition-transform" size="24"></i>
+                            Generate Meal Plan
+                        </button>
+
+                        <div id="quickActions" class="hidden pt-4 border-t border-slate-100 grid grid-cols-2 gap-3">
+                            <button onclick="scrollToSection('monthlySchedule')" class="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 hover:border-indigo-100 transition-all">
+                                <i data-lucide="calendar" size="14"></i>
+                                View Month
+                            </button>
+                            <button onclick="clearAllData()" class="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 hover:border-red-100 transition-all">
+                                <i data-lucide="trash-2" size="14"></i>
+                                Reset Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="lg:col-span-7">
+                <div id="resultArea" class="min-h-[500px] flex flex-col items-center justify-center">
+                    
+                    <!-- Empty State -->
+                    <div id="emptyState" class="text-center space-y-6 max-w-sm animate-fade-in">
+                        <div class="w-32 h-32 bg-white rounded-[2.5rem] shadow-xl flex items-center justify-center mx-auto rotate-6 border border-slate-100">
+                            <i data-lucide="sparkles" class="text-indigo-500" size="56"></i>
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-2xl font-black text-slate-800">Waiting for Magic</h3>
+                            <p class="text-slate-500">Your AI-suggested meal and nutrition details will appear here after you submit the form.</p>
+                        </div>
+                    </div>
+
+                    <!-- Loading State (Hidden) -->
+                    <div id="loadingState" class="hidden flex flex-col items-center gap-6">
+                        <div class="relative w-24 h-24">
+                            <div class="absolute inset-0 border-4 border-indigo-100 rounded-full"></div>
+                            <div class="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i data-lucide="chef-hat" class="text-indigo-600" size="32"></i>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p id="loadingTitle" class="text-xl font-bold text-slate-900">Analying Ingredients...</p>
+                            <p id="loadingSubtitle" class="text-slate-500 animate-pulse mt-1">Our AI is crafting your recipe</p>
+                        </div>
+                    </div>
+
+                    <!-- Result Content (Hidden) -->
+                    <div id="resultCard" class="hidden w-full space-y-6 animate-fade-in">
+                        <div class="glass p-8 rounded-[2.5rem] shadow-2xl border border-white relative overflow-hidden">
+                            <!-- Background Decor -->
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 -mt-8 -mr-8 rounded-full blur-3xl"></div>
+                            
+                            <div class="flex flex-col md:flex-row gap-8 relative">
+                                <!-- Meal Image/Placeholder -->
+                                <div class="w-full md:w-48 h-48 bg-slate-100 rounded-3xl overflow-hidden shadow-inner flex-shrink-0">
+                                    <div id="mealImagePlaceholder" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
+                                        <i data-lucide="chef-hat" class="text-white/50" size="64"></i>
+                                    </div>
+                                    <img id="mealImage" class="hidden w-full h-full object-cover">
+                                </div>
+
+                                <div class="flex-1 space-y-6">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full">Optimal Nutrition</span>
+                                                <span id="resPriceTag" class="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full">Under Rp 50k</span>
+                                            </div>
+                                            <h3 id="resMealName" class="text-3xl font-black text-slate-900 leading-tight">Savory Herb Chicken Stir-fry</h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nutrition Data -->
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        <div class="bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100/50 text-center">
+                                            <p id="resCalories" class="text-lg font-black text-indigo-700 leading-none">450</p>
+                                            <p class="text-[10px] font-bold text-indigo-400 mt-1 uppercase tracking-tight">Kcal</p>
+                                        </div>
+                                        <div class="bg-purple-50/50 p-3 rounded-2xl border border-purple-100/50 text-center">
+                                            <p id="resProtein" class="text-lg font-black text-purple-700 leading-none">32g</p>
+                                            <p class="text-[10px] font-bold text-purple-400 mt-1 uppercase tracking-tight">Protein</p>
+                                        </div>
+                                        <div class="bg-orange-50/50 p-3 rounded-2xl border border-orange-100/50 text-center">
+                                            <p id="resCarbs" class="text-lg font-black text-orange-700 leading-none">45g</p>
+                                            <p class="text-[10px] font-bold text-orange-400 mt-1 uppercase tracking-tight">Carbs</p>
+                                        </div>
+                                        <div class="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100/50 text-center">
+                                            <p id="resFat" class="text-lg font-black text-emerald-700 leading-none">12g</p>
+                                            <p class="text-[10px] font-bold text-emerald-400 mt-1 uppercase tracking-tight">Fat</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-8 border-slate-100">
+
+                            <!-- Identified Ingredients -->
+                            <div class="mb-8 p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50">
+                                <h4 class="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                                    <i data-lucide="scan-text" size="14"></i>
+                                    Identified Ingredients
+                                </h4>
+                                <div id="resIngredients" class="flex flex-wrap gap-2">
+                                    <!-- Dynamic tags here -->
+                                </div>
+                            </div>
+
+                            <div class="space-y-6">
+                                <h4 class="flex items-center gap-2 text-sm font-black text-slate-900 uppercase tracking-widest">
+                                    <i data-lucide="list-checks" class="text-indigo-500" size="18"></i>
+                                    Chef's Recommendation
+                                </h4>
+                                <div id="resPlan" class="text-slate-600 leading-relaxed text-sm md:text-base space-y-4">
+                                    <!-- Dynamic text here -->
+                                </div>
+                            </div>
+
+                            <button onclick="window.print()" class="mt-8 flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest">
+                                <i data-lucide="printer" size="14"></i>
+                                Save Recipe as PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Alternate Suggestions -->
+                    <div id="otherSuggestions" class="hidden mt-8 space-y-6 animate-fade-in">
+                        <div class="flex items-center gap-3 mb-6">
+                            <i data-lucide="sparkles" class="text-indigo-500" size="20"></i>
+                            <h4 class="text-lg font-black text-slate-900 uppercase tracking-tight">Opsi Menu Lainnya</h4>
+                        </div>
+                        <div id="suggestionsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Other suggestions go here -->
+                        </div>
+                    </div>
+
+                    <!-- 30-Day Monthly Schedule -->
+                    <div id="monthlySchedule" class="hidden mt-12 space-y-8 animate-fade-in pb-20">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-100">
+                                    <i data-lucide="calendar-days" class="text-white" size="24"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-black text-slate-900 leading-tight">Jadwal Makan 30 Hari</h4>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Smart Monthly Planner</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-lg border border-green-100">Auto-Generated</span>
+                            </div>
+                        </div>
+
+                        <div id="calendarContainer" class="calendar-grid">
+                            <!-- 30 days will be injected here -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 border-t border-slate-200 py-12 px-6 bg-white">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-2 opacity-50">
+                <div class="bg-slate-300 p-1.5 rounded-lg">
+                    <i data-lucide="utensils" class="text-white" size="16"></i>
+                </div>
+                <h1 class="text-lg font-black tracking-tight text-slate-800">MealAI.</h1>
+            </div>
+            <p class="text-slate-400 text-sm">© 2026 MealAI Assistant. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a href="#" class="text-slate-400 hover:text-indigo-500 transition-colors"><i data-lucide="instagram" size="20"></i></a>
+                <a href="#" class="text-slate-400 hover:text-indigo-500 transition-colors"><i data-lucide="twitter" size="20"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Meal Detail Modal -->
+    <div id="mealModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-backdrop animate-fade-in">
+        <div class="glass max-w-lg w-full rounded-[2.5rem] shadow-2xl border border-white overflow-hidden relative">
+            <button onclick="closeMealModal()" class="absolute top-6 right-6 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
+                <i data-lucide="x" size="20"></i>
+            </button>
+            <div class="p-8 space-y-6">
+                <div class="flex items-center gap-4">
+                    <div class="bg-indigo-600 p-3 rounded-2xl">
+                        <i data-lucide="utensils" class="text-white" size="24"></i>
+                    </div>
+                    <div>
+                        <p id="modalDay" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Day 1 Plan</p>
+                        <h3 id="modalMealName" class="text-2xl font-black text-slate-900 leading-tight">Meal Name</h3>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/50">
+                        <p id="modalCalories" class="text-xl font-black text-indigo-700">450</p>
+                        <p class="text-[10px] font-bold text-indigo-400 uppercase">Estimated Kcal</p>
+                    </div>
+                    <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100/50 text-center flex flex-col items-center justify-center">
+                        <i data-lucide="sparkles" class="text-purple-500 mb-1" size="16"></i>
+                        <p class="text-[10px] font-bold text-purple-600 uppercase">Recommended</p>
+                    </div>
+                </div>
+                <div class="space-y-4 pt-4 border-t border-slate-100">
+                    <h4 class="text-xs font-black text-slate-900 uppercase">Description</h4>
+                    <p id="modalDescription" class="text-sm text-slate-500 leading-relaxed italic">Healthy and nutritious meal prepared with fresh ingredients.</p>
+                </div>
+                <button onclick="closeMealModal()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-indigo-600 transition-all">
+                    Got it, thanks!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

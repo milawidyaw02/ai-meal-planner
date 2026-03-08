@@ -1,0 +1,56 @@
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+.glass { 
+    background: rgba(255, 255, 255, 0.8); 
+    backdrop-filter: blur(12px); 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+}
+.gradient-text { 
+    background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); 
+    -webkit-background-clip: text; 
+    background-clip: text;
+    -webkit-text-fill-color: transparent; 
+}
+.upload-area { 
+    border: 2px dashed #cbd5e1; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+.upload-area:hover { 
+    border-color: #6366f1; 
+    background-color: #f1f5f9;
+    transform: translateY(-2px);
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.api-key-glow {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+@media (max-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+.day-card {
+    transition: all 0.2s ease;
+}
+.day-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+.modal-backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+}
