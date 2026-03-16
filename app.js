@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GEMINI_API_KEY } from "./config.js";
-
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 // Init Lucide
 lucide.createIcons();
 
