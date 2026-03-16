@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🥘 MealAI Planner
 
 AI-powered meal planner that turns your fridge ingredients into healthy, balanced meals. Built with Vanilla JS, Tailwind CSS, and the Gemini Pro Vision API.
@@ -53,3 +54,18 @@ Follow these steps to run the application on your local machine.
 
 ## 🔒 Security Note
 This project requires an API key. For security reasons, your API key is stored in `config.js`, which is intentionally ignored by Git (via `.gitignore`) to prevent accidental leaks. **Never commit your real API key to a public repository.**
+=======
+## Features
+- Upload ingredient photos
+- AI ingredient recognition
+- 30-day meal planning
+- Nutrition-aware recommendations
+
+## Tech Stack
+
+- HTML
+- CSS
+- Tailwind CSS
+- JavaScript
+- GeminiAI API
+>>>>>>> 12a1b4a463cbc0f566856d9cc086e31c750f01ec
