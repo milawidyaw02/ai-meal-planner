@@ -144,92 +144,17 @@
 
                     <!-- Result Content (Hidden) -->
                     <div id="resultCard" class="hidden w-full space-y-6 animate-fade-in">
-                        <div class="glass p-8 rounded-[2.5rem] shadow-2xl border border-white relative overflow-hidden">
-                            <!-- Background Decor -->
-                            <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 -mt-8 -mr-8 rounded-full blur-3xl"></div>
-                            
-                            <div class="flex flex-col md:flex-row gap-8 relative">
-                                <!-- Meal Image/Placeholder -->
-                                <div class="w-full md:w-48 h-48 bg-slate-100 rounded-3xl overflow-hidden shadow-inner flex-shrink-0">
-                                    <div id="mealImagePlaceholder" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
-                                        <i data-lucide="chef-hat" class="text-white/50" size="64"></i>
-                                    </div>
-                                    <img id="mealImage" class="hidden w-full h-full object-cover">
-                                </div>
-
-                                <div class="flex-1 space-y-6">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full">Optimal Nutrition</span>
-                                                <span id="resPriceTag" class="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full">Under Rp 50k</span>
-                                            </div>
-                                            <h3 id="resMealName" class="text-3xl font-black text-slate-900 leading-tight">Savory Herb Chicken Stir-fry</h3>
-                                        </div>
-                                    </div>
-
-                                    <!-- Nutrition Data -->
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        <div class="bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100/50 text-center">
-                                            <p id="resCalories" class="text-lg font-black text-indigo-700 leading-none">450</p>
-                                            <p class="text-[10px] font-bold text-indigo-400 mt-1 uppercase tracking-tight">Kcal</p>
-                                        </div>
-                                        <div class="bg-purple-50/50 p-3 rounded-2xl border border-purple-100/50 text-center">
-                                            <p id="resProtein" class="text-lg font-black text-purple-700 leading-none">32g</p>
-                                            <p class="text-[10px] font-bold text-purple-400 mt-1 uppercase tracking-tight">Protein</p>
-                                        </div>
-                                        <div class="bg-orange-50/50 p-3 rounded-2xl border border-orange-100/50 text-center">
-                                            <p id="resCarbs" class="text-lg font-black text-orange-700 leading-none">45g</p>
-                                            <p class="text-[10px] font-bold text-orange-400 mt-1 uppercase tracking-tight">Carbs</p>
-                                        </div>
-                                        <div class="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100/50 text-center">
-                                            <p id="resFat" class="text-lg font-black text-emerald-700 leading-none">12g</p>
-                                            <p class="text-[10px] font-bold text-emerald-400 mt-1 uppercase tracking-tight">Fat</p>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- Identified Ingredients -->
+                        <div class="p-6 bg-white/50 glass rounded-3xl border border-white shadow-xl overflow-hidden relative">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 -mt-8 -mr-8 rounded-full blur-3xl"></div>
+                            <h4 class="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 relative z-10">
+                                <i data-lucide="scan-text" size="14"></i>
+                                Bahan Terdeteksi
+                            </h4>
+                            <div id="resIngredients" class="flex flex-wrap gap-2 relative z-10">
+                                <!-- Dynamic tags here -->
                             </div>
-
-                            <hr class="my-8 border-slate-100">
-
-                            <!-- Identified Ingredients -->
-                            <div class="mb-8 p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50">
-                                <h4 class="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
-                                    <i data-lucide="scan-text" size="14"></i>
-                                    Identified Ingredients
-                                </h4>
-                                <div id="resIngredients" class="flex flex-wrap gap-2">
-                                    <!-- Dynamic tags here -->
-                                </div>
-                            </div>
-
-                            <div class="space-y-6">
-                                <h4 class="flex items-center gap-2 text-sm font-black text-slate-900 uppercase tracking-widest">
-                                    <i data-lucide="list-checks" class="text-indigo-500" size="18"></i>
-                                    Chef's Recommendation
-                                </h4>
-                                <div id="resPlan" class="text-slate-600 leading-relaxed text-sm md:text-base space-y-4">
-                                    <!-- Dynamic text here -->
-                                </div>
-                            </div>
-
-                            <button onclick="window.print()" class="mt-8 flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest">
-                                <i data-lucide="printer" size="14"></i>
-                                Save Recipe as PDF
-                            </button>
                         </div>
-                    </div>
-
-                    <!-- Alternate Suggestions -->
-                    <div id="otherSuggestions" class="hidden mt-8 space-y-6 animate-fade-in">
-                        <div class="flex items-center gap-3 mb-6">
-                            <i data-lucide="sparkles" class="text-indigo-500" size="20"></i>
-                            <h4 class="text-lg font-black text-slate-900 uppercase tracking-tight">Opsi Menu Lainnya</h4>
-                        </div>
-                        <div id="suggestionsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Other suggestions go here -->
-                        </div>
-                    </div>
 
                     <!-- 30-Day Monthly Schedule -->
                     <div id="monthlySchedule" class="hidden mt-12 space-y-8 animate-fade-in pb-20">
@@ -302,29 +227,43 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Sahur Card -->
                     <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100/50 relative overflow-hidden group hover:border-indigo-300 transition-colors">
-                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <i data-lucide="moon" class="text-indigo-400" size="24"></i>
                         </div>
                         <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1 relative z-10">Menu Sahur</p>
                         <h4 id="modalSahurMeal" class="text-sm font-bold text-slate-800 leading-tight mb-3 relative z-10 min-h-[40px]">Nama Menu Sahur</h4>
-                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm relative z-10">
+                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm relative z-10 mb-4">
                             <p class="text-xs font-black text-indigo-700 flex items-center gap-1">
                                 <span id="modalSahurCalories">0</span> Kcal
                             </p>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-indigo-100 space-y-2 relative z-10">
+                            <h5 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><i data-lucide="book-open" size="12"></i> Resep Singkat</h5>
+                            <ul id="modalSahurRecipe" class="text-[11px] text-slate-600 space-y-1 list-decimal list-outside pl-3 marker:font-bold marker:text-indigo-400">
+                                <!-- Recipe steps -->
+                            </ul>
                         </div>
                     </div>
 
                     <!-- Berbuka Card -->
                     <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100/50 relative overflow-hidden group hover:border-amber-300 transition-colors">
-                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <i data-lucide="sun" class="text-amber-500" size="24"></i>
                         </div>
                         <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1 relative z-10">Menu Berbuka</p>
                         <h4 id="modalBerbukaMeal" class="text-sm font-bold text-slate-800 leading-tight mb-3 relative z-10 min-h-[40px]">Nama Menu Berbuka</h4>
-                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-amber-100 shadow-sm relative z-10">
+                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-amber-100 shadow-sm relative z-10 mb-4">
                             <p class="text-xs font-black text-amber-700 flex items-center gap-1">
                                 <span id="modalBerbukaCalories">0</span> Kcal
                             </p>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-amber-100 space-y-2 relative z-10">
+                            <h5 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><i data-lucide="book-open" size="12"></i> Resep Singkat</h5>
+                            <ul id="modalBerbukaRecipe" class="text-[11px] text-slate-600 space-y-1 list-decimal list-outside pl-3 marker:font-bold marker:text-amber-400">
+                                <!-- Recipe steps -->
+                            </ul>
                         </div>
                     </div>
                 </div>

@@ -124,45 +124,37 @@ addMealBtn.addEventListener('click', async () => {
         }
 
         const prompt = `
-            Saya adalah asisten koki cerdas dengan kemampuan analisa visual tingkat lanjut. Di depan saya ada foto bahan-bahan makanan.
-            User memiliki budget Rp ${budget} dan waktu ${time} menit.
+            Saya adalah asisten koki cerdas dengan kemampuan analisa visual tingkat lanjut. Di depan saya ada foto bahan-bahan masakan.
+            User memiliki budget maksimal Rp ${budget} dan waktu memasak ${time} menit per hidangan.
             
             Tugas kamu:
             1. Analisa bahan apa saja yang ada di foto.
-            2. Berikan 5 saran menu masakan yang paling pas dengan bahan tersebut, budget, dan waktu yang ada.
-            3. Pertimbangkan nutrisi (Kalori, Protein, Karbohidrat, Lemak).
-            4. Berikan alasan kenapa menu ini cocok, sertakan data nutrisi (kalori, protein, dll) di dalam narasi alasan dan checklist tersebut agar user paham manfaat spesifiknya.
+            2. Buatkan Jadwal Makan 30 Hari Spesial Bulan Ramadhan (Menu Sahur dan Menu Berbuka).
+            3. Menu harus kreatif, bergizi seimbang, dan sedapat mungkin memanfaatkan bahan yang di foto (dikombinasikan dengan bahan umum lainnya sesuai budget).
+            4. Sertakan cara memasak langkah demi langkah (recipe) singkat untuk setiap menu Sahur dan Berbuka.
 
             OUTPUT HARUS DALAM FORMAT JSON SEPERTI BERIKUT:
             {
                 "ingredients": ["Bahan A", "Bahan B", ...],
-                "suggestions": [
-                    {
-                        "meal": "Nama Masakan 1",
-                        "calories": "angka saja",
-                        "protein": "angka+g",
-                        "carbs": "angka+g",
-                        "fat": "angka+g",
-                        "reason": "Jelaskan kenapa menu ini cocok dengan menyebutkan keunggulan nutrisinya (misal: 'Menu ini mengandung 32g protein yang tinggi untuk otot...')",
-                        "checklist": [
-                            "Highlight Nutrisi 1 (misal: Serat tinggi dari sayuran)",
-                            "Highlight Nutrisi 2 (misal: Kalori pas untuk budget energi)",
-                            "Highlight Budget/Waktu"
-                        ]
-                    },
-                    ... (sampai 5 menu detail)
-                ],
                 "monthly_plan": [
                     { 
                         "day": 1, 
-                        "sahur": { "meal": "Tumis Bayam Telur", "calories": "300" }, 
-                        "berbuka": { "meal": "Ayam Bakar Madu", "calories": "450" }, 
+                        "sahur": { 
+                            "meal": "Tumis Bayam Telur", 
+                            "calories": "300",
+                            "recipe": ["Potong bayam", "Tumis bawang", "Masukkan telur dan bayam", "Sajikan"]
+                        }, 
+                        "berbuka": { 
+                            "meal": "Ayam Bakar Madu", 
+                            "calories": "450",
+                            "recipe": ["Marinasi ayam dengan madu", "Panggang ayam hingga matang", "Sajikan hangat"]
+                        }, 
                         "note": "Kombinasi serat saat sahur agar kenyang lebih lama."
                     },
-                    ... (sampai 30 hari)
+                    ... (lanjutkan sampai 30 hari)
                 ]
             }
-            Hanya berikan JSON murni, jangan ada teks lain.
+            Hanya berikan JSON murni, jangan ada teks pembuka/penutup.
         `;
 
         // Attempt with primary model (Gemini 3)
@@ -190,7 +182,6 @@ addMealBtn.addEventListener('click', async () => {
 
         const resultData = {
             ingredients: data.ingredients,
-            suggestions: data.suggestions,
             monthly_plan: data.monthly_plan,
             budget: budget,
             time: time
@@ -229,23 +220,6 @@ async function fileToGenerativePart(file) {
 }
 
 function displayResults(data, isSilent = false) {
-    const main = data.suggestions[0];
-    
-    document.getElementById('resMealName').innerText = main.meal;
-    document.getElementById('resCalories').innerText = main.calories;
-    document.getElementById('resProtein').innerText = main.protein;
-    document.getElementById('resCarbs').innerText = main.carbs;
-    document.getElementById('resFat').innerText = main.fat;
-    document.getElementById('resPriceTag').innerText = `Est. Rp ${parseInt(data.budget).toLocaleString()}`;
-    document.getElementById('resPlan').innerHTML = `
-        <p>${main.reason}</p>
-        <p><strong>Kenapa menu ini?</strong></p>
-        <ul class="list-disc pl-5 space-y-2">
-            ${main.checklist.map(item => `<li>${item}</li>`).join('')}
-        </ul>
-        <p class="italic text-indigo-600 font-medium pt-2">"Waktu memasak ${data.time} menit sangat ideal untuk hidangan ini."</p>
-    `;
-
     // Render Ingredients
     const ingContainer = document.getElementById('resIngredients');
     ingContainer.innerHTML = data.ingredients.map(ing => `
@@ -253,26 +227,6 @@ function displayResults(data, isSilent = false) {
             ${ing}
         </span>
     `).join('');
-
-    // Alternate Suggestions
-    const otherSuggestions = document.getElementById('otherSuggestions');
-    const suggestionsList = document.getElementById('suggestionsList');
-    
-    if (data.suggestions.length > 1) {
-        otherSuggestions.classList.remove('hidden');
-        suggestionsList.innerHTML = data.suggestions.slice(1).map(s => `
-            <div class="glass p-5 rounded-3xl border border-white hover:border-indigo-100 transition-all group cursor-pointer" 
-                    onclick="switchMainMeal('${s.meal.replace(/'/g, "\\'")}')">
-                <div class="flex justify-between items-start mb-3">
-                    <h5 class="font-black text-slate-900 leading-tight text-xs">${s.meal}</h5>
-                    <span class="text-[9px] font-black text-indigo-500 bg-indigo-50 px-2 py-1 rounded-lg shrink-0 ml-2">${s.calories} Kcal</span>
-                </div>
-                <p class="text-[9px] text-slate-500 line-clamp-2">${s.reason}</p>
-            </div>
-        `).join('');
-    } else {
-        otherSuggestions.classList.add('hidden');
-    }
 
     // Render Monthly Schedule
     const monthlySection = document.getElementById('monthlySchedule');
@@ -340,10 +294,12 @@ window.showMealDetail = (day) => {
     // Inject Sahur
     document.getElementById('modalSahurMeal').innerText = dayPlan.sahur.meal;
     document.getElementById('modalSahurCalories').innerText = dayPlan.sahur.calories;
+    document.getElementById('modalSahurRecipe').innerHTML = dayPlan.sahur.recipe ? dayPlan.sahur.recipe.map(step => `<li>${step}</li>`).join('') : '<li>Resep tidak tersedia</li>';
     
     // Inject Berbuka
     document.getElementById('modalBerbukaMeal').innerText = dayPlan.berbuka.meal;
     document.getElementById('modalBerbukaCalories').innerText = dayPlan.berbuka.calories;
+    document.getElementById('modalBerbukaRecipe').innerHTML = dayPlan.berbuka.recipe ? dayPlan.berbuka.recipe.map(step => `<li>${step}</li>`).join('') : '<li>Resep tidak tersedia</li>';
     
     // Total Calories
     const totalKcal = parseInt(dayPlan.sahur.calories || 0) + parseInt(dayPlan.berbuka.calories || 0);
@@ -360,23 +316,6 @@ window.closeMealModal = () => {
     const modal = document.getElementById('mealModal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
-};
-
-window.switchMainMeal = (mealName) => {
-    const data = window.lastData;
-    const selected = data.suggestions.find(s => s.meal === mealName);
-    if (!selected) return;
-
-    // Simple swap: Move selected to index 0
-    const index = data.suggestions.indexOf(selected);
-    data.suggestions.splice(index, 1);
-    data.suggestions.unshift(selected);
-    
-    // Persist the swap
-    localStorage.setItem('mealai_last_results', JSON.stringify(data));
-    
-    displayResults(data);
-    window.scrollTo({ top: document.getElementById('resultCard').offsetTop - 100, behavior: 'smooth' });
 };
 
 // Drag & Drop effects
