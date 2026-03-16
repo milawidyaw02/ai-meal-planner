@@ -153,7 +153,12 @@ addMealBtn.addEventListener('click', async () => {
                     ... (sampai 5 menu detail)
                 ],
                 "monthly_plan": [
-                    { "day": 1, "meal": "Menu Hari 1", "calories": "angka", "note": "catatan singkat masakan" },
+                    { 
+                        "day": 1, 
+                        "sahur": { "meal": "Tumis Bayam Telur", "calories": "300" }, 
+                        "berbuka": { "meal": "Ayam Bakar Madu", "calories": "450" }, 
+                        "note": "Kombinasi serat saat sahur agar kenyang lebih lama."
+                    },
                     ... (sampai 30 hari)
                 ]
             }
@@ -276,14 +281,24 @@ function displayResults(data, isSilent = false) {
     if (data.monthly_plan) {
         monthlySection.classList.remove('hidden');
         calendarContainer.innerHTML = data.monthly_plan.map(d => `
-            <div class="day-card glass p-4 rounded-2xl border border-white hover:border-indigo-100 shadow-sm flex flex-col justify-between h-32 cursor-pointer" 
+            <div class="day-card glass p-4 rounded-2xl border border-white hover:border-indigo-100 shadow-sm flex flex-col justify-between h-40 cursor-pointer" 
                     onclick="showMealDetail(${d.day})">
-                <div>
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Day ${d.day}</span>
-                    <h6 class="text-[11px] font-black text-slate-800 leading-tight mt-1 line-clamp-2">${d.meal}</h6>
+                <div class="space-y-2">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Hari Ke-${d.day}</span>
+                    
+                    <div class="space-y-1">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-wider"><i data-lucide="moon" size="8" class="inline mr-1"></i>Sahur</span>
+                            <h6 class="text-[10px] font-black text-slate-800 leading-tight truncate">${d.sahur.meal}</h6>
+                        </div>
+                        <div class="flex flex-col pt-1">
+                            <span class="text-[9px] font-bold text-amber-600 uppercase tracking-wider"><i data-lucide="sun" size="8" class="inline mr-1"></i>Berbuka</span>
+                            <h6 class="text-[10px] font-black text-slate-800 leading-tight truncate">${d.berbuka.meal}</h6>
+                        </div>
+                    </div>
                 </div>
                 <div class="mt-2 pt-2 border-t border-slate-50 flex items-center justify-between">
-                    <span class="text-[9px] font-bold text-indigo-500">${d.calories} kcal</span>
+                    <span class="text-[9px] font-bold text-slate-500">${parseInt(d.sahur.calories || 0) + parseInt(d.berbuka.calories || 0)} Total Kcal</span>
                     <i data-lucide="chevron-right" size="10" class="text-slate-300"></i>
                 </div>
             </div>
@@ -319,10 +334,20 @@ window.showMealDetail = (day) => {
     const dayPlan = data.monthly_plan.find(d => d.day === day);
     if (!dayPlan) return;
 
-    document.getElementById('modalDay').innerText = `Day ${day} Plan`;
-    document.getElementById('modalMealName').innerText = dayPlan.meal;
-    document.getElementById('modalCalories').innerText = dayPlan.calories;
-    document.getElementById('modalDescription').innerText = dayPlan.note || `Menu sehat yang dirancang khusus untuk memenuhi kebutuhan nutrisi kamu di hari ke-${day}.`;
+    document.getElementById('modalDay').innerText = `Rencana Hari Ke-${day}`;
+    document.getElementById('modalDescription').innerText = dayPlan.note || `Menu sehat yang dirancang khusus untuk memenuhi kebutuhan nutrisi kamu di puasa hari ke-${day}.`;
+    
+    // Inject Sahur
+    document.getElementById('modalSahurMeal').innerText = dayPlan.sahur.meal;
+    document.getElementById('modalSahurCalories').innerText = dayPlan.sahur.calories;
+    
+    // Inject Berbuka
+    document.getElementById('modalBerbukaMeal').innerText = dayPlan.berbuka.meal;
+    document.getElementById('modalBerbukaCalories').innerText = dayPlan.berbuka.calories;
+    
+    // Total Calories
+    const totalKcal = parseInt(dayPlan.sahur.calories || 0) + parseInt(dayPlan.berbuka.calories || 0);
+    document.getElementById('modalTotalCalories').innerText = `${totalKcal} Total Kcal / Hari`;
     
     const modal = document.getElementById('mealModal');
     modal.classList.remove('hidden');

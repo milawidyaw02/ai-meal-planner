@@ -239,8 +239,8 @@
                                     <i data-lucide="calendar-days" class="text-white" size="24"></i>
                                 </div>
                                 <div>
-                                    <h4 class="text-xl font-black text-slate-900 leading-tight">Jadwal Makan 30 Hari</h4>
-                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Smart Monthly Planner</p>
+                                    <h4 class="text-xl font-black text-slate-900 leading-tight">Jadwal Sahur & Berbuka</h4>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Spesial 30 Hari Ramadhan</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
@@ -274,38 +274,72 @@
         </div>
     </footer>
 
-    <!-- Meal Detail Modal -->
+    <!-- Meal Detail Modal (Ramadan Edition) -->
     <div id="mealModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-backdrop animate-fade-in">
         <div class="glass max-w-lg w-full rounded-[2.5rem] shadow-2xl border border-white overflow-hidden relative">
-            <button onclick="closeMealModal()" class="absolute top-6 right-6 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
+            <button onclick="closeMealModal()" class="absolute top-6 right-6 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors z-10">
                 <i data-lucide="x" size="20"></i>
             </button>
             <div class="p-8 space-y-6">
-                <div class="flex items-center gap-4">
-                    <div class="bg-indigo-600 p-3 rounded-2xl">
-                        <i data-lucide="utensils" class="text-white" size="24"></i>
+                <!-- Header -->
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-indigo-600 p-2.5 rounded-xl shadow-md shadow-indigo-200">
+                            <i data-lucide="moon-star" class="text-white" size="20"></i>
+                        </div>
+                        <div>
+                            <p id="modalDay" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rencana Hari Ke-1</p>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight">Jadwal Puasa</h3>
+                        </div>
                     </div>
-                    <div>
-                        <p id="modalDay" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Day 1 Plan</p>
-                        <h3 id="modalMealName" class="text-2xl font-black text-slate-900 leading-tight">Meal Name</h3>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/50">
-                        <p id="modalCalories" class="text-xl font-black text-indigo-700">450</p>
-                        <p class="text-[10px] font-bold text-indigo-400 uppercase">Estimated Kcal</p>
-                    </div>
-                    <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100/50 text-center flex flex-col items-center justify-center">
-                        <i data-lucide="sparkles" class="text-purple-500 mb-1" size="16"></i>
-                        <p class="text-[10px] font-bold text-purple-600 uppercase">Recommended</p>
+                    <div class="text-right">
+                        <p id="modalTotalCalories" class="text-lg font-black text-indigo-600 leading-none">0</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Kcal</p>
                     </div>
                 </div>
-                <div class="space-y-4 pt-4 border-t border-slate-100">
-                    <h4 class="text-xs font-black text-slate-900 uppercase">Description</h4>
-                    <p id="modalDescription" class="text-sm text-slate-500 leading-relaxed italic">Healthy and nutritious meal prepared with fresh ingredients.</p>
+
+                <!-- Meals Container -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Sahur Card -->
+                    <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100/50 relative overflow-hidden group hover:border-indigo-300 transition-colors">
+                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="moon" class="text-indigo-400" size="24"></i>
+                        </div>
+                        <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1 relative z-10">Menu Sahur</p>
+                        <h4 id="modalSahurMeal" class="text-sm font-bold text-slate-800 leading-tight mb-3 relative z-10 min-h-[40px]">Nama Menu Sahur</h4>
+                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm relative z-10">
+                            <p class="text-xs font-black text-indigo-700 flex items-center gap-1">
+                                <span id="modalSahurCalories">0</span> Kcal
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Berbuka Card -->
+                    <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100/50 relative overflow-hidden group hover:border-amber-300 transition-colors">
+                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="sun" class="text-amber-500" size="24"></i>
+                        </div>
+                        <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1 relative z-10">Menu Berbuka</p>
+                        <h4 id="modalBerbukaMeal" class="text-sm font-bold text-slate-800 leading-tight mb-3 relative z-10 min-h-[40px]">Nama Menu Berbuka</h4>
+                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-amber-100 shadow-sm relative z-10">
+                            <p class="text-xs font-black text-amber-700 flex items-center gap-1">
+                                <span id="modalBerbukaCalories">0</span> Kcal
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="closeMealModal()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-indigo-600 transition-all">
-                    Got it, thanks!
+
+                <!-- Description -->
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-100">
+                    <h4 class="flex items-center gap-2 text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2">
+                        <i data-lucide="info" class="text-slate-400" size="14"></i> Tips Gizi
+                    </h4>
+                    <p id="modalDescription" class="text-[11px] text-slate-600 leading-relaxed font-medium">Catatan khusus untuk hari ini.</p>
+                </div>
+
+                <!-- Action -->
+                <button onclick="closeMealModal()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+                    Selesai & Tutup
                 </button>
             </div>
         </div>
