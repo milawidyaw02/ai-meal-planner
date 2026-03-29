@@ -30,10 +30,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Create config.js
-        run: echo "export const GEMINI_API_KEY = '${{ secrets.GEMINI_API_KEY }}';" > config.js
       - name: Build
         run: npm run build
+        env:
+          VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
