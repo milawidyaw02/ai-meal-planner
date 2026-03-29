@@ -271,7 +271,7 @@ addMealBtn.addEventListener('click', async () => {
             console.warn("Primary model busy, falling back...", fallbackErr);
             document.getElementById('loadingSubtitle').innerText = "Model utama sedang sibuk, pakai model cadangan ya...";
             
-            const stableModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const stableModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
             const result = await stableModel.generateContent(chatContent);
             const response = await result.response;
             responseText = response.text();
