@@ -263,13 +263,13 @@ addMealBtn.addEventListener('click', async () => {
         if (imageData) chatContent.push(imageData);
 
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
             const result = await model.generateContent(chatContent);
             const response = await result.response;
             responseText = response.text();
         } catch (fallbackErr) {
             console.warn("Primary model busy, falling back...", fallbackErr);
-            document.getElementById('loadingSubtitle').innerText = "Gemini 3 lagi sibuk, pakai model stabil ya...";
+            document.getElementById('loadingSubtitle').innerText = "Model utama sedang sibuk, pakai model cadangan ya...";
             
             const stableModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             const result = await stableModel.generateContent(chatContent);
