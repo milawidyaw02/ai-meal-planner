@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +17,9 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="min-h-screen selection:bg-indigo-100 selection:text-indigo-700">
-    
+
     <!-- Navbar -->
     <nav class="sticky top-0 z-50 glass border-b border-slate-200 py-4 px-6">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -37,7 +39,8 @@
                 Turn your <span class="text-indigo-600">Ingredients</span> into Healthy Masterpieces.
             </h2>
             <p class="text-slate-500 text-lg md:text-xl leading-relaxed">
-                Simply snap a photo of your fridge, tell us your budget, and let our AI chef suggest the perfect meal balanced with nutrition.
+                Simply snap a photo of your fridge, tell us your budget, and let our AI chef suggest the perfect meal
+                balanced with nutrition.
             </p>
         </div>
 
@@ -45,65 +48,172 @@
             <!-- Left Column: Input Form -->
             <div class="lg:col-span-5 space-y-8">
                 <div class="glass p-8 rounded-[2rem] shadow-2xl border border-white/50 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500/10 blur-3xl rounded-full"></div>
-                    
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500/10 blur-3xl rounded-full">
+                    </div>
+
                     <div class="space-y-6 relative">
-                        <!-- File Upload -->
+                        <!-- Ingredient Input Tabs -->
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-3 ml-1">1. Snap your ingredients</label>
-                            <div id="dropZone" class="upload-area rounded-3xl p-10 text-center cursor-pointer relative group">
-                                <input type="file" id="fileUpload" class="hidden" accept="image/*">
-                                <div id="uploadPlaceholder" class="transition-all duration-300">
-                                    <div class="w-16 h-16 bg-white shadow-sm rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                        <i data-lucide="camera" class="text-indigo-500" size="32"></i>
+                            <label class="block text-sm font-bold text-slate-700 mb-3 ml-1">1. Masukkan Bahan
+                                Masakan</label>
+
+                            <!-- Tab Navigation -->
+                            <div class="flex p-1 bg-slate-100/80 rounded-2xl border border-slate-200/50 mb-4">
+                                <button type="button" onclick="switchInputTab('photo')" id="tabBtnPhoto"
+                                    class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all duration-300 bg-white shadow-md text-indigo-600 font-bold text-xs uppercase tracking-widest">
+                                    <i data-lucide="camera" size="16"></i>
+                                    Foto Bahan
+                                </button>
+                                <button type="button" onclick="switchInputTab('manual')" id="tabBtnManual"
+                                    class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all duration-300 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600">
+                                    <i data-lucide="pencil-line" size="16"></i>
+                                    Ketik Manual
+                                </button>
+                            </div>
+
+                            <!-- Photo Input Section -->
+                            <div id="photoInputSection" class="animate-fade-in">
+                                <div id="dropZone"
+                                    class="upload-area rounded-3xl p-10 text-center cursor-pointer relative group">
+                                    <input type="file" id="fileUpload" class="hidden" accept="image/*">
+                                    <div id="uploadPlaceholder" class="transition-all duration-300">
+                                        <div
+                                            class="w-16 h-16 bg-white shadow-sm rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                            <i data-lucide="camera" class="text-indigo-500" size="32"></i>
+                                        </div>
+                                        <p class="text-slate-600 font-medium text-sm">Ambil atau seret foto bahan</p>
+                                        <p class="text-slate-400 text-[10px] mt-1">Maksimal 5MB (JPG, PNG)</p>
                                     </div>
-                                    <p class="text-slate-600 font-medium">Click or drag photo</p>
-                                    <p class="text-slate-400 text-xs mt-1">Supports JPG, PNG (Max 5MB)</p>
-                                </div>
-                                <div id="imagePreviewContainer" class="hidden relative group">
-                                    <img id="imagePreview" class="rounded-2xl max-h-64 mx-auto shadow-xl border-4 border-white object-cover">
-                                    <button onclick="resetUpload(event)" class="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors">
-                                        <i data-lucide="x" size="16"></i>
-                                    </button>
+                                    <div id="imagePreviewContainer" class="hidden relative group">
+                                        <img id="imagePreview"
+                                            class="rounded-2xl max-h-64 mx-auto shadow-xl border-4 border-white object-cover">
+                                        <div onclick="resetUpload(event)"
+                                            class="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors cursor-pointer">
+                                            <i data-lucide="x" size="16"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- Manual Input Section -->
+                            <div id="manualInputSection" class="hidden animate-fade-in">
+                                <div class="relative group">
+                                    <div
+                                        class="absolute top-4 left-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none">
+                                        <i data-lucide="pencils" size="18"></i>
+                                    </div>
+                                    <textarea id="manualIngredients" rows="6"
+                                        placeholder="Ketik bahan masakanmu di sini...&#10;Contoh:&#10;- 2 potong ayam&#10;- 3 siung bawang merah&#10;- Setengah ikat bayam"
+                                        class="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-3xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 font-semibold text-sm leading-relaxed"></textarea>
+                                </div>
+                                <p
+                                    class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2 ml-1 italic">
+                                    * AI akan menganalisa daftar bahan yang kamu ketik</p>
+                            </div>
                         </div>
+
+                        <!-- Planning Mode -->
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-3 ml-1">2. Pilih Mode
+                                Perencanaan</label>
+                            <div
+                                class="grid grid-cols-2 gap-3 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-200/50">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="planMode" value="ramadhan" class="hidden peer" checked>
+                                    <div
+                                        class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl transition-all duration-300 peer-checked:bg-white peer-checked:shadow-md peer-checked:text-indigo-600 text-slate-400 group relative">
+                                        <i data-lucide="moon-star" class="mb-1" size="20"></i>
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-center">Mode
+                                            Ramadhan</span>
+                                        <div
+                                            class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-indigo-100 pointer-events-none">
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="planMode" value="regular" class="hidden peer">
+                                    <div
+                                        class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl transition-all duration-300 peer-checked:bg-white peer-checked:shadow-md peer-checked:text-indigo-600 text-slate-400 group relative">
+                                        <i data-lucide="calendar-check" class="mb-1" size="20"></i>
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-center">Mode
+                                            Harian</span>
+                                        <div
+                                            class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-indigo-100 pointer-events-none">
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Duration Selector (Hidden by default, shown for Regular Mode) -->
+                        <div id="durationSelector" class="hidden animate-fade-in">
+                            <label class="block text-sm font-bold text-slate-700 mb-3 ml-1">3. Durasi
+                                Perencanaan</label>
+                            <div
+                                class="grid grid-cols-2 gap-3 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-200/50">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="planDuration" value="30" class="hidden peer" checked>
+                                    <div
+                                        class="flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 peer-checked:bg-white peer-checked:shadow-md peer-checked:text-indigo-600 text-slate-400 group relative">
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-center">30
+                                            Hari</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="planDuration" value="1" class="hidden peer">
+                                    <div
+                                        class="flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 peer-checked:bg-white peer-checked:shadow-md peer-checked:text-indigo-600 text-slate-400 group relative">
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-center">1
+                                            Hari Saja</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
 
                         <!-- Configs -->
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label for="budget" class="block text-sm font-bold text-slate-700 mb-2 ml-1">2. Budget (Rp)</label>
+                                <label for="budget" class="block text-sm font-bold text-slate-700 mb-2 ml-1">4. Budget
+                                    (Rp)</label>
                                 <div class="relative group">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
                                         <span class="text-xs font-bold">Rp</span>
                                     </div>
-                                    <input type="number" id="budget" name="budget" placeholder="50.000" 
+                                    <input type="text" id="budget" name="budget" placeholder="50.000"
                                         class="w-full pl-10 pr-4 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 font-semibold">
                                 </div>
                             </div>
                             <div>
-                                <label for="timeProcess" class="block text-sm font-bold text-slate-700 mb-2 ml-1">3. Time (Min)</label>
+                                <label for="timeProcess" class="block text-sm font-bold text-slate-700 mb-2 ml-1">5.
+                                    Waktu (Menit)</label>
                                 <div class="relative group">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
                                         <i data-lucide="clock" size="18"></i>
                                     </div>
-                                    <input type="number" id="timeProcess" name="time" placeholder="30" 
+                                    <input type="number" id="timeProcess" name="time" placeholder="30"
                                         class="w-full pl-10 pr-4 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 font-semibold">
                                 </div>
                             </div>
                         </div>
 
-                        <button id="addMealBtn" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-xl shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-3 group">
-                            <i data-lucide="magic-wand" class="group-hover:rotate-12 transition-transform" size="24"></i>
+                        <button id="addMealBtn"
+                            class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-xl shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-3 group">
+                            <i data-lucide="magic-wand" class="group-hover:rotate-12 transition-transform"
+                                size="24"></i>
                             Generate Meal Plan
                         </button>
 
                         <div id="quickActions" class="hidden pt-4 border-t border-slate-100 grid grid-cols-2 gap-3">
-                            <button onclick="scrollToSection('monthlySchedule')" class="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 hover:border-indigo-100 transition-all">
+                            <button onclick="scrollToSection('monthlySchedule')"
+                                class="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 hover:border-indigo-100 transition-all">
                                 <i data-lucide="calendar" size="14"></i>
                                 View Month
                             </button>
-                            <button onclick="clearAllData()" class="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 hover:border-red-100 transition-all">
+                            <button onclick="clearAllData()"
+                                class="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:text-red-600 hover:border-red-100 transition-all">
                                 <i data-lucide="trash-2" size="14"></i>
                                 Reset Data
                             </button>
@@ -115,15 +225,17 @@
             <!-- Right Column: Results -->
             <div class="lg:col-span-7">
                 <div id="resultArea" class="min-h-[500px] flex flex-col items-center justify-center">
-                    
+
                     <!-- Empty State -->
                     <div id="emptyState" class="text-center space-y-6 max-w-sm animate-fade-in">
-                        <div class="w-32 h-32 bg-white rounded-[2.5rem] shadow-xl flex items-center justify-center mx-auto rotate-6 border border-slate-100">
+                        <div
+                            class="w-32 h-32 bg-white rounded-[2.5rem] shadow-xl flex items-center justify-center mx-auto rotate-6 border border-slate-100">
                             <i data-lucide="sparkles" class="text-indigo-500" size="56"></i>
                         </div>
                         <div class="space-y-2">
                             <h3 class="text-2xl font-black text-slate-800">Waiting for Magic</h3>
-                            <p class="text-slate-500">Your AI-suggested meal and nutrition details will appear here after you submit the form.</p>
+                            <p class="text-slate-500">Your AI-suggested meal and nutrition details will appear here
+                                after you submit the form.</p>
                         </div>
                     </div>
 
@@ -131,23 +243,30 @@
                     <div id="loadingState" class="hidden flex flex-col items-center gap-6">
                         <div class="relative w-24 h-24">
                             <div class="absolute inset-0 border-4 border-indigo-100 rounded-full"></div>
-                            <div class="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
+                            <div
+                                class="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin">
+                            </div>
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <i data-lucide="chef-hat" class="text-indigo-600" size="32"></i>
                             </div>
                         </div>
                         <div class="text-center">
                             <p id="loadingTitle" class="text-xl font-bold text-slate-900">Analying Ingredients...</p>
-                            <p id="loadingSubtitle" class="text-slate-500 animate-pulse mt-1">Our AI is crafting your recipe</p>
+                            <p id="loadingSubtitle" class="text-slate-500 animate-pulse mt-1">Our AI is crafting your
+                                recipe</p>
                         </div>
                     </div>
 
                     <!-- Result Content (Hidden) -->
                     <div id="resultCard" class="hidden w-full space-y-6 animate-fade-in">
                         <!-- Identified Ingredients -->
-                        <div class="p-6 bg-white/50 glass rounded-3xl border border-white shadow-xl overflow-hidden relative">
-                            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 -mt-8 -mr-8 rounded-full blur-3xl"></div>
-                            <h4 class="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 relative z-10">
+                        <div
+                            class="p-6 bg-white/50 glass rounded-3xl border border-white shadow-xl overflow-hidden relative">
+                            <div
+                                class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 -mt-8 -mr-8 rounded-full blur-3xl">
+                            </div>
+                            <h4
+                                class="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 relative z-10">
                                 <i data-lucide="scan-text" size="14"></i>
                                 Bahan Terdeteksi
                             </h4>
@@ -156,31 +275,35 @@
                             </div>
                         </div>
 
-                    <!-- 30-Day Monthly Schedule -->
-                    <div id="monthlySchedule" class="hidden mt-12 space-y-8 animate-fade-in pb-20">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-100">
-                                    <i data-lucide="calendar-days" class="text-white" size="24"></i>
+                        <!-- 30-Day Monthly Schedule -->
+                        <div id="monthlySchedule" class="hidden mt-12 space-y-8 animate-fade-in pb-20">
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-100">
+                                        <i data-lucide="calendar-days" class="text-white" size="24"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl font-black text-slate-900 leading-tight">Jadwal Sahur &
+                                            Berbuka</h4>
+                                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                            Spesial 30 Hari Ramadhan</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 class="text-xl font-black text-slate-900 leading-tight">Jadwal Sahur & Berbuka</h4>
-                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Spesial 30 Hari Ramadhan</p>
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-lg border border-green-100">Auto-Generated</span>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-lg border border-green-100">Auto-Generated</span>
+
+                            <div id="calendarContainer" class="calendar-grid">
+                                <!-- 30 days will be injected here -->
                             </div>
                         </div>
 
-                        <div id="calendarContainer" class="calendar-grid">
-                            <!-- 30 days will be injected here -->
-                        </div>
                     </div>
-
                 </div>
             </div>
-        </div>
     </main>
 
     <footer class="mt-20 border-t border-slate-200 py-12 px-6 bg-white">
@@ -193,91 +316,63 @@
             </div>
             <p class="text-slate-400 text-sm">© 2026 MealAI Assistant. All rights reserved.</p>
             <div class="flex gap-6">
-                <a href="#" class="text-slate-400 hover:text-indigo-500 transition-colors"><i data-lucide="instagram" size="20"></i></a>
-                <a href="#" class="text-slate-400 hover:text-indigo-500 transition-colors"><i data-lucide="twitter" size="20"></i></a>
+                <a href="#" class="text-slate-400 hover:text-indigo-500 transition-colors"><i data-lucide="instagram"
+                        size="20"></i></a>
+                <a href="#" class="text-slate-400 hover:text-indigo-500 transition-colors"><i data-lucide="twitter"
+                        size="20"></i></a>
             </div>
         </div>
     </footer>
 
-    <!-- Meal Detail Modal (Ramadan Edition) -->
-    <div id="mealModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-backdrop animate-fade-in">
-        <div class="glass max-w-lg w-full rounded-[2.5rem] shadow-2xl border border-white overflow-hidden relative">
-            <button onclick="closeMealModal()" class="absolute top-6 right-6 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors z-10">
+    <!-- Meal Detail Modal (Responsive & Scrollable) -->
+    <div id="mealModal"
+        class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-backdrop animate-fade-in group">
+        <div
+            class="glass max-w-lg w-full rounded-[2.5rem] shadow-2xl border border-white max-h-[min(92vh,850px)] overflow-hidden flex flex-col relative no-scrollbar">
+            
+            <!-- Close Button (Always visible) -->
+            <button onclick="closeMealModal()"
+                class="absolute top-6 right-6 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors z-40">
                 <i data-lucide="x" size="20"></i>
             </button>
-            <div class="p-8 space-y-6">
-                <!-- Header -->
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-indigo-600 p-2.5 rounded-xl shadow-md shadow-indigo-200">
-                            <i data-lucide="moon-star" class="text-white" size="20"></i>
-                        </div>
-                        <div>
-                            <p id="modalDay" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rencana Hari Ke-1</p>
-                            <h3 class="text-xl font-black text-slate-900 leading-tight">Jadwal Puasa</h3>
-                        </div>
+
+            <!-- Header (Fixed) -->
+            <div class="px-6 sm:px-8 pt-8 pb-5 border-b border-slate-100/50 relative z-30">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 p-2.5 rounded-xl shadow-md shadow-indigo-200">
+                        <i data-lucide="moon-star" class="text-white" size="20"></i>
                     </div>
-                    <div class="text-right">
+                    <div>
+                        <p id="modalDay" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Rencana Hari</p>
+                        <h3 class="text-xl font-black text-slate-900 leading-tight">Detail Menu</h3>
                         <p id="modalTotalCalories" class="text-lg font-black text-indigo-600 leading-none">0</p>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Kcal</p>
                     </div>
                 </div>
+            </div>
 
-                <!-- Meals Container -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Sahur Card -->
-                    <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100/50 relative overflow-hidden group hover:border-indigo-300 transition-colors">
-                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity pointer-events-none">
-                            <i data-lucide="moon" class="text-indigo-400" size="24"></i>
-                        </div>
-                        <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1 relative z-10">Menu Sahur</p>
-                        <h4 id="modalSahurMeal" class="text-sm font-bold text-slate-800 leading-tight mb-3 relative z-10 min-h-[40px]">Nama Menu Sahur</h4>
-                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm relative z-10 mb-4">
-                            <p class="text-xs font-black text-indigo-700 flex items-center gap-1">
-                                <span id="modalSahurCalories">0</span> Kcal
-                            </p>
-                        </div>
-                        
-                        <div class="pt-4 border-t border-indigo-100 space-y-2 relative z-10">
-                            <h5 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><i data-lucide="book-open" size="12"></i> Resep Singkat</h5>
-                            <ul id="modalSahurRecipe" class="text-[11px] text-slate-600 space-y-1 list-decimal list-outside pl-3 marker:font-bold marker:text-indigo-400">
-                                <!-- Recipe steps -->
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Berbuka Card -->
-                    <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100/50 relative overflow-hidden group hover:border-amber-300 transition-colors">
-                        <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity pointer-events-none">
-                            <i data-lucide="sun" class="text-amber-500" size="24"></i>
-                        </div>
-                        <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1 relative z-10">Menu Berbuka</p>
-                        <h4 id="modalBerbukaMeal" class="text-sm font-bold text-slate-800 leading-tight mb-3 relative z-10 min-h-[40px]">Nama Menu Berbuka</h4>
-                        <div class="inline-block bg-white px-3 py-1.5 rounded-lg border border-amber-100 shadow-sm relative z-10 mb-4">
-                            <p class="text-xs font-black text-amber-700 flex items-center gap-1">
-                                <span id="modalBerbukaCalories">0</span> Kcal
-                            </p>
-                        </div>
-                        
-                        <div class="pt-4 border-t border-amber-100 space-y-2 relative z-10">
-                            <h5 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><i data-lucide="book-open" size="12"></i> Resep Singkat</h5>
-                            <ul id="modalBerbukaRecipe" class="text-[11px] text-slate-600 space-y-1 list-decimal list-outside pl-3 marker:font-bold marker:text-amber-400">
-                                <!-- Recipe steps -->
-                            </ul>
-                        </div>
-                    </div>
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 relative z-20 custom-scrollbar">
+                <!-- Meals Container (Dynamic) -->
+                <div id="modalMealsContainer" class="grid grid-cols-1 gap-4">
+                    <!-- Cards will be injected here via JS -->
                 </div>
 
-                <!-- Description -->
+                <!-- Description (Inside Scroll) -->
                 <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-100">
-                    <h4 class="flex items-center gap-2 text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2">
+                    <h4
+                        class="flex items-center gap-2 text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2">
                         <i data-lucide="info" class="text-slate-400" size="14"></i> Tips Gizi
                     </h4>
-                    <p id="modalDescription" class="text-[11px] text-slate-600 leading-relaxed font-medium">Catatan khusus untuk hari ini.</p>
+                    <p id="modalDescription" class="text-[11px] text-slate-600 leading-relaxed font-medium">Catatan
+                        khusus untuk hari ini.</p>
                 </div>
+            </div>
 
-                <!-- Action -->
-                <button onclick="closeMealModal()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+            <!-- Footer (Fixed) -->
+            <div class="px-6 sm:px-8 pb-8 pt-4 border-t border-slate-100/50 bg-white/20 backdrop-blur-sm z-30">
+                <button onclick="closeMealModal()"
+                    class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
                     Selesai & Tutup
                 </button>
             </div>
@@ -287,4 +382,5 @@
     <!-- External JavaScript -->
     <script type="module" src="app.js"></script>
 </body>
+
 </html>
