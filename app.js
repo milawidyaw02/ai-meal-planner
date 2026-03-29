@@ -263,8 +263,8 @@ addMealBtn.addEventListener('click', async () => {
         if (imageData) chatContent.push(imageData);
 
         try {
-            // Using gemini-1.5-flash with explicit v1 API for maximum stability
-            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+            // Using Gemini 3.1 Flash-Lite (the efficient, latest model as of March 2026)
+            const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" }, { apiVersion: "v1beta" });
             const result = await model.generateContent(chatContent);
             const response = await result.response;
             responseText = response.text();
