@@ -264,7 +264,7 @@ addMealBtn.addEventListener('click', async () => {
 
         try {
             // Using gemini-1.5-flash with explicit v1 API for maximum stability
-            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" }, { apiVersion: "v1" });
+            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
             const result = await model.generateContent(chatContent);
             const response = await result.response;
             responseText = response.text();
