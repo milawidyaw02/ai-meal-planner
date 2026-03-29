@@ -263,18 +263,18 @@ addMealBtn.addEventListener('click', async () => {
         if (imageData) chatContent.push(imageData);
 
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+            // Using gemini-1.5-flash with explicit v1 API for maximum stability
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
             const result = await model.generateContent(chatContent);
             const response = await result.response;
             responseText = response.text();
-        } catch (fallbackErr) {
-            console.warn("Primary model busy, falling back...", fallbackErr);
-            document.getElementById('loadingSubtitle').innerText = "Model utama sedang sibuk, pakai model cadangan ya...";
-            
-            const stableModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-            const result = await stableModel.generateContent(chatContent);
-            const response = await result.response;
-            responseText = response.text();
+        } catch (err) {
+            console.error("AI Generation Error:", err);
+            loadingState.classList.add('hidden');
+            addMealBtn.disabled = false;
+            addMealBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            alert('Waduh, ada masalah pas hubungin AI: ' + err.message);
+            return;
         }
         
         // Extract JSON if AI wraps it in backticks or adds text
