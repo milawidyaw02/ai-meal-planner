@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 // Init Lucide
 lucide.createIcons();
@@ -160,8 +160,9 @@ addMealBtn.addEventListener('click', async () => {
     const planMode = document.querySelector('input[name="planMode"]:checked').value;
     const planDuration = planMode === 'regular' ? document.querySelector('input[name="planDuration"]:checked').value : "30";
     
-    if (GEMINI_API_KEY === "") {
-        alert('Tolong masukkan API Key kamu di dalam file app.js pada variabel GEMINI_API_KEY ya!');
+    if (!GEMINI_API_KEY || GEMINI_API_KEY.length < 10) {
+        console.error("DEBUG: API Key is missing or invalid in environment.", { keyLength: GEMINI_API_KEY ? GEMINI_API_KEY.length : 0 });
+        alert('Waduh! API Key-nya belum terpasang dengan benar di server. Pastikan secret GEMINI_API_KEY sudah diisi di GitHub Settings.');
         return;
     }
 
@@ -189,30 +190,19 @@ addMealBtn.addEventListener('click', async () => {
     addMealBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
     try {
-        const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+        const client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
         let responseText = "";
 
-        // Convert image to Base64 for the SDK only if in photo mode
-        let imageData = null;
-        if (activeIngTab === 'photo') {
-            if (currentFile) {
-                imageData = await fileToGenerativePart(currentFile);
-            } else {
-                const savedImage = localStorage.getItem('mealai_saved_image');
-                if (savedImage) {
-                    imageData = {
-                        inlineData: { data: savedImage.split(',')[1], mimeType: "image/jpeg" }
-                    };
-                }
-            }
-        }
-
+        // Prepare Contents for the new SDK
+        const contentParts = [];
+        
+        // Add text prompt
         let prompt = "";
         if (planMode === 'ramadhan') {
             prompt = `
-                Saya adalah asisten koki cerdas. Analisa bahan masakan dari ${activeIngTab === 'photo' ? 'foto yang saya lampirkan' : 'daftar teks berikut: "' + manuals + '"'}.
-                Budget maksimal Rp ${budget} dan waktu ${time} menit per hidangan.
-                Buatkan Jadwal Makan 30 Hari Spesial Bulan Ramadhan (Menu Sahur dan Menu Berbuka).
+                Analisa bahan masakan dari ${activeIngTab === 'photo' ? 'foto' : 'teks: "' + manuals + '"'}.
+                Budget Rp ${budget}, waktu ${time} menit.
+                Buat Jadwal 30 Hari Ramadhan (Sahur & Berbuka).
                 
                 OUTPUT JSON:
                 {
@@ -232,10 +222,9 @@ addMealBtn.addEventListener('click', async () => {
             `;
         } else {
             prompt = `
-                Saya adalah asisten koki cerdas. Analisa bahan masakan dari ${activeIngTab === 'photo' ? 'foto yang saya lampirkan' : 'daftar teks berikut: "' + manuals + '"'}.
-                Budget maksimal Rp ${budget} dan waktu ${time} menit per hidangan.
-                Buatkan Jadwal Makan ${planDuration} Hari (Sarapan, Makan Siang, Makan Malam).
-                ${planDuration === "1" ? "Berikan saran menu untuk 1 hari saja." : "Berikan saran menu lengkap untuk 30 hari."}
+                Analisa bahan masakan dari ${activeIngTab === 'photo' ? 'foto' : 'teks: "' + manuals + '"'}.
+                Budget Rp ${budget}, waktu ${time} menit.
+                Buat Jadwal ${planDuration} Hari (Sarapan, Siang, Malam).
                 
                 OUTPUT JSON:
                 {
@@ -256,18 +245,39 @@ addMealBtn.addEventListener('click', async () => {
                 }
             `;
         }
-        prompt += " Hanya berikan JSON murni tanpa markdown atau teks lainnya.";
+        prompt += " Hanya berikan JSON murni tanpa markdown.";
+        contentParts.push({ text: prompt });
 
-        // Attempt with primary model (Gemini 3)
-        const chatContent = [prompt];
-        if (imageData) chatContent.push(imageData);
+        // Add Image data if in photo mode
+        if (activeIngTab === 'photo') {
+            let base64Data = "";
+            let mimeType = "image/jpeg";
 
+            if (currentFile) {
+                base64Data = await fileToBase64(currentFile);
+                mimeType = currentFile.type;
+            } else {
+                const savedImage = localStorage.getItem('mealai_saved_image');
+                if (savedImage) {
+                    base64Data = savedImage.split(',')[1];
+                }
+            }
+
+            if (base64Data) {
+                contentParts.push({
+                    inlineData: {
+                        data: base64Data,
+                        mimeType: mimeType
+                    }
+                });
+            }
+        }
         try {
-            // Using Gemini 3.1 Flash-Lite (the efficient, latest model as of March 2026)
-            const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" }, { apiVersion: "v1beta" });
-            const result = await model.generateContent(chatContent);
-            const response = await result.response;
-            responseText = response.text();
+            const response = await client.models.generateContent({
+                model: "gemini-3-flash-preview",
+                contents: [{ role: 'user', parts: contentParts }]
+            });
+            responseText = response.text;
         } catch (err) {
             console.error("AI Generation Error:", err);
             loadingState.classList.add('hidden');
@@ -315,15 +325,12 @@ addMealBtn.addEventListener('click', async () => {
     }
 });
 
-async function fileToGenerativePart(file) {
-    const base64EncodedDataPromise = new Promise((resolve) => {
+async function fileToBase64(file) {
+    return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result.split(',')[1]);
         reader.readAsDataURL(file);
     });
-    return {
-        inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-    };
 }
 
 function displayResults(data, isSilent = false) {
